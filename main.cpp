@@ -14,12 +14,22 @@ struct User // Structure to represent a user
     User *next;
 };
 
+void writeOperationToFile(int operationNumber) // Write Operation number to file (1 for insert, 2 for delete, etc.)
+{
+    ofstream file("users.txt", ios::app);
+    if (file.is_open())
+    {
+        file << operationNumber << endl;
+        file.close();
+    }
+}
+
 void insertNewUser() // Function to insert a new user
 {
     static User *head = nullptr; // Head of the linked list
 
     User *newUser = new User;
-    newUser->id = USER_ID++;
+    newUser->id = USER_ID++; // Remember, the compiler first initializes the variable and then assigns the value, so this will not increment the ID in the first iteration
     cout << "Enter user name: ";
     cin.ignore();
     getline(cin, newUser->name);
@@ -95,7 +105,14 @@ int main()
         switch (choice)
         {
         case 1:
-            insertNewUser();
+            cout << "How many users do you want to insert? ";
+            int numUsers;
+            cin >> numUsers;
+            writeOperationToFile(1); // Log the operation,
+            for (int i = 0; i < numUsers; i++)
+            {
+                insertNewUser();
+            }
             break;
         case 2:
             deleteUser();
