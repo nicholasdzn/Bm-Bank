@@ -14,6 +14,8 @@ struct User // Structure to represent a user
     User *next;
 };
 
+User *head = nullptr; // Global head pointer for the linked list
+
 void writeOperationToFile(int operationNumber) // Write Operation number to file (1 for insert, 2 for delete, etc.)
 {
     ofstream file("users.txt", ios::app);
@@ -23,11 +25,8 @@ void writeOperationToFile(int operationNumber) // Write Operation number to file
         file.close();
     }
 }
-
-void insertNewUser() // Function to insert a new user
-{
-    static User *head = nullptr; // Head of the linked list
-
+void insertNewUser()
+{ // Function to insert a new user
     User *newUser = new User;
     newUser->id = USER_ID++; // Remember, the compiler first initializes the variable and then assigns the value, so this will not increment the ID in the first iteration
     cout << "Enter user name: ";
@@ -68,9 +67,34 @@ void insertNewUser() // Function to insert a new user
     }
 }
 
-void deleteUser() // Function to delete a user
+void deleteUser(int userId) // Function to delete a user
 {
-    cout << "Delete user" << endl;
+    User *temp = head;
+    User *prev = nullptr;
+
+    while (temp != nullptr && temp->id != userId)
+    {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == nullptr)
+    {
+        cout << "User not found." << endl;
+        return;
+    }
+
+    if (prev == nullptr)
+    {
+        head = temp->next; // Deleting the head
+    }
+    else
+    {
+        prev->next = temp->next; // Bypass the node to delete it
+    }
+    delete temp;
+
+    cout << "User deleted successfully." << endl;
 }
 
 void searchUser() // Function to search for a user
@@ -108,14 +132,18 @@ int main()
             cout << "How many users do you want to insert? ";
             int numUsers;
             cin >> numUsers;
-            writeOperationToFile(1); // Log the operation,
+            writeOperationToFile(1); // Log the operation
             for (int i = 0; i < numUsers; i++)
             {
                 insertNewUser();
             }
             break;
         case 2:
-            deleteUser();
+            writeOperationToFile(2); // Log the operation
+            int userId;
+            cout << "Enter user ID to delete: ";
+            cin >> userId;
+            deleteUser(userId);
             break;
         case 3:
             searchUser();
