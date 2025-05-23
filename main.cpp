@@ -18,19 +18,19 @@ User *head = nullptr; // Global head pointer for the linked list
 
 void writeUsersToFile() // Write Operation number to file (1 for insert, 2 for delete, etc.)
 {
-    // Grava o novo usuário em um arquivo CSV
+    // write users to file
     ofstream file("users.txt", ios::app);
     if (file.is_open())
     {
         file << USER_ID - 1 << endl;
         for (User *temp = head; temp != nullptr; temp = temp->next)
         {
-            file << temp->id << "," << temp->name << "," << temp->age << "," << temp->balance << endl;
+            file << temp->name << "," << temp->age << "," << temp->balance << endl;
         }
     }
     else
     {
-        cout << "Erro ao abrir o arquivo para gravação." << endl;
+        cout << "Error to open the file" << endl;
     }
 }
 
@@ -39,18 +39,15 @@ void insertNewUser()
     User *newUser = new User;
     newUser->id = USER_ID++; // Remember, the compiler first initializes the variable and then assigns the value, so this will not increment the ID in the first iteration
     string tempName;
-
-    do // Loop to ensure the name is within the limit
+    do
     {
         cout << "Enter user name (max 100 characters): ";
-        cin.ignore();
         getline(cin, tempName);
         if (tempName.length() > 100)
         {
-            cout << "Name too long. Please enter a name with up to 100 characters." << endl;
+            cout << "Name too long. Please enter up to 100 characters." << endl;
         }
     } while (tempName.length() > 100);
-
     newUser->name = tempName;
     cin.ignore();
     getline(cin, newUser->name);
