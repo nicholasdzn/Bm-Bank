@@ -88,24 +88,103 @@ void deleteUser(int userId) // Function to delete a user
     {
         prev->next = temp->next; // Bypass the node to delete it
     }
+    cout << "User " << temp->id << " deleted successfully." << endl;
     delete temp;
-
-    cout << "User deleted successfully." << endl;
 }
 
-void searchUser() // Function to search for a user
+void searchUser(int id) // Function to search for a user
 {
-    cout << "Search user" << endl;
+    User *temp = head;
+    while (temp != nullptr)
+    {
+        if (temp->id == id)
+        {
+            cout << "User " << temp->id << " have R$" << temp->balance << " in the account." << endl;
+            return;
+        }
+        temp = temp->next;
+    }
+    cout << "User not found." << endl;
 }
 
-void transferMoney() // Function to transfer money
+void transferMoney(int user1, int user2, double money) // Function to transfer money
 {
-    cout << "Transfer money" << endl;
+    User *temp1 = head;
+    User *temp2 = head;
+
+    while (temp1 != nullptr && temp1->id != user1)
+    {
+        temp1 = temp1->next;
+    }
+
+    while (temp2 != nullptr && temp2->id != user2)
+    {
+        temp2 = temp2->next;
+    }
+
+    if (temp1 == nullptr || temp2 == nullptr)
+    {
+        cout << "User not found." << endl;
+        return;
+    }
+
+    if (temp1->balance < money)
+    {
+        cout << "Insufficient balance." << endl;
+        return;
+    }
+
+    temp1->balance -= money;
+    temp2->balance += money;
+
+    cout << "Transfer successful. New balance for user " << user1 << ": R$" << temp1->balance << endl;
 }
 
 void loadFileToMemory() // Function to load a file (.txt) and write it in the memory
 {
-    cout << "Load file" << endl;
+    ifstream file("users.txt");
+    if (!file.is_open())
+    {
+        cout << "Erro ao abrir o arquivo para leitura." << endl;
+        return;
+    }
+
+    string line;
+
+    User *last = nullptr;
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
+        User *newUser = new User;
+        size_t pos1 = line.find(',');
+        size_t pos2 = line.find(',', pos1 + 1);
+        size_t pos3 = line.find(',', pos2 + 1);
+
+        if (pos1 == string::npos || pos2 == string::npos || pos3 == string::npos)
+        {
+            delete newUser;
+            continue;
+        }
+
+        newUser->id = stoi(line.substr(0, pos1));
+        newUser->name = line.substr(pos1 + 1, pos2 - pos1 - 1);
+        newUser->age = stoi(line.substr(pos2 + 1, pos3 - pos2 - 1));
+        newUser->balance = stod(line.substr(pos3 + 1));
+        newUser->next = nullptr;
+
+        if (head == nullptr)
+        {
+            head = newUser;
+        }
+        else
+        {
+            last->next = newUser;
+        }
+        last = newUser;
+    }
+    file.close();
+    cout << "Users loaded from file successfully." << endl;
 }
 
 int main()
@@ -132,6 +211,7 @@ int main()
             {
                 insertNewUser();
             }
+            numUsers == 1 ? cout << "User with id " << USER_ID - 1 << " inserted sucessfully" << endl : cout << numUsers << " Users with id " << USER_ID - numUsers << " to id " << USER_ID - 1 << " inserted succesfully" << endl;
             break;
         case 2:
             int userId;
@@ -140,12 +220,28 @@ int main()
             deleteUser(userId);
             break;
         case 3:
-            searchUser();
+            cout << "Enter user ID to search: ";
+            cin >> userId;
+            searchUser(userId);
             break;
         case 4:
-            transferMoney();
+            int user1, user2;
+            double money;
+            cout << "Enter sender user ID: ";
+            cin >> user1;
+            cout << "Enter receiver user ID: ";
+            cin >> user2;
+            cout << "Enter amount to transfer: ";
+            cin >> money;
+            if (user1 == user2)
+            {
+                cout << "You cannot transfer money to yourself." << endl;
+                break;
+            }
+            transferMoney(user1, user2, money);
             break;
         case 5:
+            head == nullptr ? cout << endl : cout << "You have to delete all users before loading a file." << endl;
             loadFileToMemory();
             break;
         case 0:
