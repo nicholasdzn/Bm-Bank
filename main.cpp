@@ -16,15 +16,24 @@ struct User // Structure to represent a user
 
 User *head = nullptr; // Global head pointer for the linked list
 
-void writeOperationToFile(int operationNumber) // Write Operation number to file (1 for insert, 2 for delete, etc.)
+void writeUsersToFile() // Write Operation number to file (1 for insert, 2 for delete, etc.)
 {
+    // Grava o novo usuário em um arquivo CSV
     ofstream file("users.txt", ios::app);
     if (file.is_open())
     {
-        file << operationNumber << endl;
-        file.close();
+        file << USER_ID - 1 << endl;
+        for (User *temp = head; temp != nullptr; temp = temp->next)
+        {
+            file << temp->id << "," << temp->name << "," << temp->age << "," << temp->balance << endl;
+        }
+    }
+    else
+    {
+        cout << "Erro ao abrir o arquivo para gravação." << endl;
     }
 }
+
 void insertNewUser()
 { // Function to insert a new user
     User *newUser = new User;
@@ -52,19 +61,6 @@ void insertNewUser()
         temp->next = newUser;
     }
     cout << "User inserted successfully with ID: " << newUser->id << endl;
-
-    // Grava o novo usuário em um arquivo CSV
-    ofstream file("users.txt", ios::app);
-    if (file.is_open())
-    {
-        file << newUser->id << "," << newUser->name << "," << newUser->age << "," << newUser->balance << endl;
-        file.close();
-        cout << "Usuário gravado no arquivo com sucesso." << endl;
-    }
-    else
-    {
-        cout << "Erro ao abrir o arquivo para gravação." << endl;
-    }
 }
 
 void deleteUser(int userId) // Function to delete a user
@@ -132,14 +128,12 @@ int main()
             cout << "How many users do you want to insert? ";
             int numUsers;
             cin >> numUsers;
-            writeOperationToFile(1); // Log the operation
             for (int i = 0; i < numUsers; i++)
             {
                 insertNewUser();
             }
             break;
         case 2:
-            writeOperationToFile(2); // Log the operation
             int userId;
             cout << "Enter user ID to delete: ";
             cin >> userId;
@@ -155,6 +149,7 @@ int main()
             loadFileToMemory();
             break;
         case 0:
+            writeUsersToFile(); // Save users to file before exiting
             cout << "Exiting..." << endl;
             break;
         default:
