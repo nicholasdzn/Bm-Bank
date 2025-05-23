@@ -19,7 +19,7 @@ User *head = nullptr; // Global head pointer for the linked list
 void writeUsersToFile() // Write Operation number to file (1 for insert, 2 for delete, etc.)
 {
     // write users to file
-    ofstream file("users.txt", ios::app);
+    ofstream file("users.txt", ios::out | ios::trunc);
     if (file.is_open())
     {
         file << USER_ID - 1 << endl;
@@ -39,6 +39,7 @@ void insertNewUser()
     User *newUser = new User;
     newUser->id = USER_ID++; // Remember, the compiler first initializes the variable and then assigns the value, so this will not increment the ID in the first iteration
     string tempName;
+    cin.ignore(); // Ensure buffer is clear before first getline
     do
     {
         cout << "Enter user name (max 100 characters): ";
@@ -49,8 +50,6 @@ void insertNewUser()
         }
     } while (tempName.length() > 100);
     newUser->name = tempName;
-    cin.ignore();
-    getline(cin, newUser->name);
     cout << "Enter user age: ";
     cin >> newUser->age;
     cout << "Enter initial balance: ";
@@ -160,27 +159,23 @@ void loadFileToMemory() // Function to load a file (.txt) and write it in the me
     }
 
     string line;
-
     User *last = nullptr;
     while (getline(file, line))
     {
         if (line.empty())
             continue;
-        User *newUser = new User;
+
         size_t pos1 = line.find(',');
         size_t pos2 = line.find(',', pos1 + 1);
-        size_t pos3 = line.find(',', pos2 + 1);
 
-        if (pos1 == string::npos || pos2 == string::npos || pos3 == string::npos)
-        {
-            delete newUser;
+        if (pos1 == string::npos || pos2 == string::npos)
             continue;
-        }
 
-        newUser->id = stoi(line.substr(0, pos1));
-        newUser->name = line.substr(pos1 + 1, pos2 - pos1 - 1);
-        newUser->age = stoi(line.substr(pos2 + 1, pos3 - pos2 - 1));
-        newUser->balance = stod(line.substr(pos3 + 1));
+        User *newUser = new User;
+        newUser->id = USER_ID++;
+        newUser->name = line.substr(0, pos1);
+        newUser->age = stoi(line.substr(pos1 + 1, pos2 - pos1 - 1));
+        newUser->balance = stod(line.substr(pos2 + 1));
         newUser->next = nullptr;
 
         if (head == nullptr)
