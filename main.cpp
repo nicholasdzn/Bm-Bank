@@ -38,7 +38,20 @@ void insertNewUser()
 { // Function to insert a new user
     User *newUser = new User;
     newUser->id = USER_ID++; // Remember, the compiler first initializes the variable and then assigns the value, so this will not increment the ID in the first iteration
-    cout << "Enter user name: ";
+    string tempName;
+
+    do // Loop to ensure the name is within the limit
+    {
+        cout << "Enter user name (max 100 characters): ";
+        cin.ignore();
+        getline(cin, tempName);
+        if (tempName.length() > 100)
+        {
+            cout << "Name too long. Please enter a name with up to 100 characters." << endl;
+        }
+    } while (tempName.length() > 100);
+
+    newUser->name = tempName;
     cin.ignore();
     getline(cin, newUser->name);
     cout << "Enter user age: ";
