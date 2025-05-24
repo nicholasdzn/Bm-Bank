@@ -19,7 +19,7 @@ User *head = nullptr; // Global head pointer for the linked list
 void writeUsersToFile() // Write Operation number to file (1 for insert, 2 for delete, etc.)
 {
     // write users to file
-    ofstream file("users.txt", ios::out | ios::trunc);
+    ofstream file("users.txt");
     if (file.is_open())
     {
         file << USER_ID - 1 << endl;

@@ -1,2 +1,5 @@
-1
-nicholas,21,2e+013
+4
+michael,32,9000
+douglas,9201,2.10101e+006
+nicjs,22,30000
+filipe,3000,323132
