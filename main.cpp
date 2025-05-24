@@ -246,7 +246,6 @@ int main()
             transferMoney(user1, user2, money);
             break;
         case 5:
-            head == nullptr ? cout << endl : cout << "You have to delete all users before loading a file." << endl;
             loadFileToMemory();
             break;
         case 0:
