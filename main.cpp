@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <iomanip> // Include for std::fixed and std::setprecision
+#include <limits>  // Include for numeric_limits
 using namespace std;
 
 int USER_ID = 1; // Constant for user ID
@@ -18,11 +20,12 @@ User *head = nullptr; // Global head pointer for the linked list
 
 void writeUsersToFile() // Write Operation number to file (1 for insert, 2 for delete, etc.)
 {
-    // write users to file
     ofstream file("users.txt", ios::out | ios::trunc);
     if (file.is_open())
     {
         file << USER_ID - 1 << endl;
+        file << std::fixed;           // Set fixed-point notation
+        file << std::setprecision(2); // Set precision to 2 decimal places
         for (User *temp = head; temp != nullptr; temp = temp->next)
         {
             file << temp->name << "," << temp->age << "," << temp->balance << endl;
@@ -44,16 +47,67 @@ void insertNewUser()
     {
         cout << "Enter user name (max 100 characters): ";
         getline(cin, tempName);
+        if (tempName.empty())
+        {
+            cout << "Name cannot be empty. Please enter a valid name." << endl;
+            continue;
+        }
         if (tempName.length() > 100)
         {
             cout << "Name too long. Please enter up to 100 characters." << endl;
         }
-    } while (tempName.length() > 100);
+        else
+        {
+            bool isNumber = true;
+            for (char c : tempName)
+            {
+                if (!isdigit(c))
+                {
+                    isNumber = false;
+                    break;
+                }
+            }
+            if (isNumber)
+            {
+                cout << "Name cannot be a number. Please enter a valid name." << endl;
+                tempName.clear();
+            }
+        }
+    } while (tempName.empty() || tempName.length() > 100);
     newUser->name = tempName;
-    cout << "Enter user age: ";
-    cin >> newUser->age;
-    cout << "Enter initial balance: ";
-    cin >> newUser->balance;
+    int tempAge;
+    while (true)
+    {
+        cout << "Enter user age: ";
+        if (cin >> tempAge && tempAge > 0)
+        {
+            newUser->age = tempAge;
+            break;
+        }
+        else
+        {
+            cout << "Invalid input. Please enter a valid age (positive integer)." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    double tempBalance;
+    while (true)
+    {
+        cout << "Enter initial balance (ex. xxxx.xx): ";
+        if (cin >> tempBalance && tempBalance >= 0)
+        {
+            newUser->balance = tempBalance;
+            break;
+        }
+        else
+        {
+            cout << "Invalid input. Please enter a valid balance (non-negative number)." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
     newUser->next = nullptr;
 
     if (head == nullptr)
@@ -151,6 +205,11 @@ void transferMoney(int user1, int user2, double money) // Function to transfer m
 
 void loadFileToMemory() // Function to load a file (.txt) and write it in the memory
 {
+    if (head != nullptr)
+    {
+        cout << "Memory already loaded. Please restart the program to load a new file." << endl;
+        return;
+    }
     ifstream file("users.txt");
     if (!file.is_open())
     {
